@@ -1,0 +1,474 @@
+//Kafe sipariş otomasyonu
+#include <iomanip> 
+#include <cstring> 
+#include <stdlib.h>
+#include <conio.h>
+#include <stdio.h> 
+#include <fstream>                  
+#include <iostream>
+#include<time.h>
+#include<locale.h>
+using namespace std;
+struct Siparis
+{
+	char yemek[80];
+	char icecek[80];
+	char tatli[80];
+	char siparis_no[3];
+};
+struct Musteri
+{
+	char ad[80];
+	char soyad[80];
+	char telefon_no[10];
+	char cinsiyet;
+	Siparis siparis;
+		
+};
+void MusteriEkle();
+void MusteriListeleme();
+void MusteriAra();
+void SiparisInceleme();
+void MusteriSil();
+void MusteriDuzenle();
+
+int main(){
+		setlocale(LC_ALL,"Turkish");
+	char anamenu;
+	do{
+	system("cls");
+	
+	cout << "|-------Hosgeldiniz------------|" << endl ;
+	cout << "|      Secim Yapiniz           |" << endl ;
+	cout << "|     1- Müşteri Ekleme        |" << endl ;
+	cout << "|     2- Müşteri Listeleme     |" << endl ;
+	cout << "|     3- Müşteri Arama         |"<< endl;
+	cout << "|     4- Sipariş İnceleme      |"<< endl;
+	cout << "|     5- Müşteri Silme         |"<< endl;
+	cout << "|     6- Müşteri Duzenle       |"<< endl;
+	cout << "|------------------------------|" << endl ;
+    char secim;
+	cin>> secim;
+	
+	switch(secim) 
+	{
+		case '1' : 
+		{
+		MusteriEkle();
+		break;	
+		}
+		case '2' : 
+		{
+		 MusteriListeleme()	;
+		 break;
+		}
+		case '3' : 
+		{
+		 MusteriAra()	;
+		 break;
+		}
+		case '4' : 
+		{
+		 SiparisInceleme()	;
+		 break;
+		}
+		case '5' : 
+		{
+		 MusteriSil();
+		 break;
+		}
+		case'6' :
+			{
+		MusteriDuzenle();
+		 break;
+			}
+		
+	}
+	
+	cout << "Ana menüye dönmek için: a basın çıkmak için: c" <<endl ; 
+	anamenu=getche();
+	
+    }while(anamenu=='a');
+     
+
+return 0;
+}
+Musteri sprs;
+
+void MusteriEkle()
+{
+	ofstream yaz("kafe.dat",ios::binary |ios::app);
+	char secim;
+	int adet=0;
+	
+	
+	do{
+	cout << "Müşteri Adı Giriniz" << endl;
+	cin>> sprs.ad;
+	cout << "Müşteri Soyadı Giriniz" << endl;
+	cin>> sprs.soyad;
+	cout<<"Müşteri Telefon Numarası giriniz" << endl;
+	cin>>sprs.telefon_no;
+	cout << "Müşteri Cinsiyet Giriniz (E/K)" << endl;
+	cin>>sprs.cinsiyet;
+	cout<<"Sipariş numarası giriniz:\t"<<endl;
+	cin>>sprs.siparis.siparis_no;
+					cout<<" |-----Ana Yemekler-------|"<<endl;
+					cout<<" |     1-Biftek           |"<<endl;
+					cout<<" |     2-Makarna          |"<<endl;
+					cout<<" |     3-Salata           |"<<endl;
+					cout<<" |     4-İskender         |"<<endl;
+					cout<<" |------------------------|"<<endl;   
+                    cout<<"Siparişinizi giriniz:\t"<<endl;
+                    cin>>sprs.siparis.yemek;
+                    cout<<" |-------İçecekler--------|"<<endl;
+					cout<<" |      1-Ayran           |"<<endl;
+					cout<<" |      2-Kola            |"<<endl;
+					cout<<" |      3-Fanta           |"<<endl;
+					cout<<" |      4-Salgam          |"<<endl;
+					cout<<" |      5-Sprite          |"<<endl;
+					cout<<" |------------------------|"<<endl;   
+                    cout<<"İçecek seçiniz:\t"<<endl;
+                    cin>>sprs.siparis.icecek;
+                     cout<<"|--------Tatlılar--------|"<<endl;
+					cout<<" |     1-Supangle         |"<<endl;
+					cout<<" |     2-Trilece          |"<<endl;
+					cout<<" |     3-Puding           |"<<endl;
+					cout<<" |     4-Muhallebi        |"<<endl;
+					cout<<" |------------------------|"<<endl;
+					cout<<"Tatlı seçiniz:\t"<<endl;
+					cin>>sprs.siparis.tatli; 
+	yaz.write((char*)&sprs, sizeof(sprs));	
+	adet++;	
+	cout << "Baska Kayit Eklemek Istermisin (E/H)" << endl;
+	secim=getche();
+	cout << endl;
+	}while(secim=='e' || secim=='E');
+	
+	cout << adet << " adet Müşteri Ekledi.." << endl;
+	
+	yaz.close();
+	
+	
+}
+void MusteriListeleme()
+{
+	
+	ifstream oku("kafe.dat",ios::binary |ios::app);
+	
+	oku.seekg(0,ios::end);
+	int kayits=oku.tellg()/sizeof(sprs);
+	cout << "Toplam Ogrenci Kayit Sayisi:"<< kayits << endl;
+	
+	if(kayits>0)
+	{
+		for(int i=0; i<kayits;i++)
+		{
+			oku.seekg(i*sizeof(sprs));
+			oku.read((char*)&sprs, sizeof(sprs));	
+		
+			cout << i+1 << ". Müşterinin Bilgileri"<< endl;
+			cout << "Müşteri Adı: "<< sprs.ad <<endl ;
+			cout << "Müşteri Soyadı: "<< sprs.soyad <<endl ;
+			cout << "Müşteri Telefon no  "<< sprs.telefon_no <<endl;
+			cout << "Müşteri Sipariş no: "<< sprs.siparis.siparis_no <<endl;
+			cout << "Siparişiniz:\t"<<sprs.siparis.yemek<<" , "<<sprs.siparis.icecek<<" , "<<sprs.siparis.tatli<<" ."<<endl;
+			if(sprs.cinsiyet=='e' || sprs.cinsiyet=='E')
+			cout << "Müşteri Cinsiyet: ERKEK " <<endl ;
+			else if(sprs.cinsiyet=='k' || sprs.cinsiyet=='K')
+			cout << "Müşteri Cinsiyet: KADIN " <<endl ;
+			
+		}
+		
+		
+	}
+	else
+	cout << "Kayit Bulunamadi..." << endl;
+
+	oku.close();
+}
+void MusteriAra()
+{
+	
+	ifstream oku("kafe.dat",ios::binary |ios::app);
+	
+	oku.seekg(0,ios::end);
+	int kayits=oku.tellg()/sizeof(sprs);
+
+
+cout <<"Aranan Müşteri Numarasını Giriniz"<< endl;
+char tel_no[80];
+cin>> tel_no;
+ 		
+	if(kayits>0)
+	{
+		for(int i=0; i<kayits;i++)
+		{
+			
+			oku.seekg(i*sizeof(sprs));
+			oku.read((char*)&sprs, sizeof(sprs));
+			
+			if(strcmp(sprs.telefon_no,tel_no)==0)
+			{
+			cout <<  "Bulunan Müşterinin Bilgileri"<< endl;
+			cout << "Müşteri Adi: "<< sprs.ad <<endl ;
+			cout << "Müşteri Soyadi: "<< sprs.soyad <<endl ;
+			cout << "Müşteri No: "<< sprs.telefon_no <<endl ;
+			cout << "Müşteri Sipariş No: "<< sprs.siparis.siparis_no <<endl;
+			if(sprs.cinsiyet=='e' || sprs.cinsiyet=='E')
+			cout << "Müşteri Cinsiyet: ERKEK " <<endl ;
+			else if(sprs.cinsiyet=='k' || sprs.cinsiyet=='K')
+			cout << "Müşteri Cinsiyet: KADIN " <<endl ;
+		    }
+		    else
+	cout << "Kayit Bulunamadi..." << endl;
+		}
+		
+		
+	}
+	
+
+	oku.close();
+}
+void SiparisInceleme()
+{
+	
+	ifstream oku("kafe.dat",ios::binary |ios::app);
+	
+	oku.seekg(0,ios::end);
+	int kayits=oku.tellg()/sizeof(sprs);
+
+
+cout <<"Aranan Sipariş Numarasını Giriniz"<< endl;
+char sprs_no[80];
+cin>> sprs_no;
+ 		
+	if(kayits>0)
+	{
+		for(int i=0; i<kayits;i++)
+		{
+			
+			oku.seekg(i*sizeof(sprs));
+			oku.read((char*)&sprs, sizeof(sprs));
+			
+			if(strcmp(sprs.siparis.siparis_no,sprs_no)==0)
+			{
+			cout <<sprs_no<<". Siparişin Bilgileri"<< endl;
+			cout << "Siparişin Sahibinin Adı: "<< sprs.ad <<endl ;
+			cout << "Sipariş Sahibinin Soyadı: "<< sprs.soyad <<endl ;
+			cout << "Sipariş Sahibinin Telefon No: "<< sprs.telefon_no <<endl ;
+			cout << "Siparişiniz:\t"<<sprs.siparis.yemek<<" , "<<sprs.siparis.icecek<<" , "<<sprs.siparis.tatli<<" ."<<endl;
+			if(sprs.cinsiyet=='e' || sprs.cinsiyet=='E')
+			cout << "Müşteri Cinsiyet: ERKEK " <<endl ;
+			else if(sprs.cinsiyet=='k' || sprs.cinsiyet=='K')
+			cout << "Müşteri Cinsiyet: KADIN " <<endl ;
+		    }
+		    else
+	cout << "Kayit Bulunamadi..." << endl;
+		}
+		
+		
+	}
+	
+
+	oku.close();
+}
+void MusteriSil()
+{
+	 char sprsno[80];
+     char secim= ' ';
+     bool var=false;
+     
+    ifstream oku("kafe.dat",ios::binary |ios::app);
+	
+	oku.seekg(0,ios::end);
+
+	int kayitsayisi=oku.tellg()/sizeof(sprs);
+	
+     cout<<"Kaydini Sileceginiz Müşteri Telefon Numarasını Giriniz : ";
+     cin>>sprsno;
+
+     for(int i=0;i<kayitsayisi;i++)
+     {
+            oku.seekg(i*sizeof(sprs));
+			oku.read((char*)&sprs, sizeof(sprs));
+			
+     if(strcmp(sprs.telefon_no,sprsno)==0)
+       {
+                 cout<<endl;
+                 cout<<"Müşterinin Adı"<<sprs.ad<<endl;
+                 cout<<"Müşterinin Soyadı"<<sprs.soyad<<endl;
+                 cout<<"Müşterinin Telefon Numarası : "<<sprs.telefon_no<<endl;
+                 cout<<"Müşterinin Sipariş Numarası"<<sprs.siparis.siparis_no<<endl;  
+                 cout << "Müşterinin Siparişi:\t"<<sprs.siparis.yemek<<" , "<<sprs.siparis.icecek<<" , "<<sprs.siparis.tatli<<" ."<<endl;
+                 cout<<"Müşterinin Cinsiyeti [E/K]: ";
+                 if(sprs.cinsiyet=='e'||sprs.cinsiyet=='E')
+                 cout<<"Erkek";
+                 if(sprs.cinsiyet=='k'||sprs.cinsiyet=='K')
+                 cout<<"Bayan";
+                
+         	 				  
+                cout<<"\n\nSilmek Istediginiz Kayit Bu Mu? [E/H] : ";
+                 secim=getche();
+            if(secim == 'H' || secim == 'h')
+              {      
+			    Musteri y_sprs;
+                ofstream y_dosya("Yedek.dat",ios::app|ios::binary);
+                
+                strcpy(y_sprs.ad,sprs.ad);
+                strcpy(y_sprs.soyad,sprs.soyad);
+                strcpy(y_sprs.telefon_no,sprs.telefon_no);
+                y_sprs.cinsiyet=sprs.cinsiyet;
+                strcpy(y_sprs.siparis.siparis_no,sprs.siparis.siparis_no);
+                strcpy(y_sprs.siparis.yemek,sprs.siparis.yemek);
+                strcpy(y_sprs.siparis.icecek,sprs.siparis.icecek);
+                strcpy(y_sprs.siparis.tatli,sprs.siparis.tatli);
+                y_dosya.write((char*)&sprs, sizeof(sprs));
+                y_dosya.close();
+              }
+            if(secim=='e'||secim=='E')
+              {
+   			   	var=true;
+  		 	  }
+        }
+             else
+             {
+              Musteri y_sprs;
+              ofstream y_dosya("Yedek.dat",ios::app|ios::binary);
+              
+              strcpy(y_sprs.ad,sprs.ad);
+              strcpy(y_sprs.soyad,sprs.soyad);
+              strcpy(y_sprs.telefon_no,sprs.telefon_no);
+              y_sprs.cinsiyet=sprs.cinsiyet;
+              strcpy(y_sprs.siparis.siparis_no,sprs.siparis.siparis_no);
+                strcpy(y_sprs.siparis.yemek,sprs.siparis.yemek);
+                strcpy(y_sprs.siparis.icecek,sprs.siparis.icecek);
+                strcpy(y_sprs.siparis.tatli,sprs.siparis.tatli);
+                       
+              y_dosya.write((char*)&sprs, sizeof(sprs));
+              y_dosya.close();
+             }
+     }
+    oku.close();
+    if(var)
+    {
+               remove("kafe.dat");
+               rename("Yedek.dat","kafe.dat");
+               cout<<"\n Müşteri Silindi"<<endl;
+    }
+    else
+    {
+               remove("Yedek.dat");
+               cout<<"\n Kayit Bulunamadi"<<endl;                  
+    }
+	
+	
+}
+void MusteriDuzenle()
+{
+	 char sprsno[80];
+     char secim= ' ';
+     bool var=false;
+     
+    ifstream oku("kafe.dat",ios::binary |ios::app);
+	
+	oku.seekg(0,ios::end);
+
+	int kayitsayisi=oku.tellg()/sizeof(sprs);
+		
+     cout<<"Kaydını Düzelteceğiniz Müşteri Numarasını Giriniz : ";
+     cin>>sprsno;
+
+     for(int i=0;i<kayitsayisi;i++)
+     {
+            oku.seekg(i*sizeof(sprs));
+			oku.read((char*)&sprs, sizeof(sprs));
+			
+     		if(strcmp(sprs.telefon_no,sprsno)==0)
+     		  {
+     		  	
+                 cout << "Müşteri Adı: "<< sprs.ad <<endl ;
+			cout << "Müşteri Soyadı: "<< sprs.soyad <<endl ;
+			cout << "Müşteri Telefon no  "<< sprs.telefon_no <<endl;
+			cout<<"Müşterinin Sipariş Numarası"<<sprs.siparis.siparis_no<<endl;  
+        	cout << "Müşterinin Siparişi:\t"<<sprs.siparis.yemek<<" , "<<sprs.siparis.icecek<<" , "<<sprs.siparis.tatli<<" ."<<endl;
+			if(sprs.cinsiyet=='e' || sprs.cinsiyet=='E')
+			cout << "Müşteri Cinsiyet: ERKEK " <<endl ;
+			else if(sprs.cinsiyet=='k' || sprs.cinsiyet=='K')
+			cout << "Müşteri Cinsiyet: KADIN " <<endl ;
+                 
+                  cout<<"\n\nDuzeltmek Istediginiz Kayit Bu Mu? [E/H] : ";
+                  secim=getche();
+                  if(secim == 'E' || secim == 'e')
+                  {
+                     	var=true;
+                        ofstream dosya("Yedek.dat",ios::app|ios::binary);
+                        cout << "\n Müşteri Adı Giriniz" << endl;
+						cin>> sprs.ad;
+						cout << "Müşteri Soyadı Giriniz" << endl;
+						cin>> sprs.soyad;
+						cout << "Müşteri Telefon No Giriniz" << endl;
+						cin>> sprs.telefon_no;
+						cout << "Müşteri Cinsiyetini Giriniz (E/K)" << endl;
+						cin>>sprs.cinsiyet;
+						cout<<"Müşteri Sipariş Numarası Giriniz"<<endl;
+						cin>>sprs.siparis.siparis_no;
+							cout<<" |-----Ana Yemekler-------|"<<endl;
+					cout<<" |     1-Biftek           |"<<endl;
+					cout<<" |     2-Makarna          |"<<endl;
+					cout<<" |     3-Salata           |"<<endl;
+					cout<<" |     4-İskender         |"<<endl;
+					cout<<" |------------------------|"<<endl;   
+                    cout<<"Siparişinizi giriniz:\t"<<endl;
+                    cin>>sprs.siparis.yemek;
+                    cout<<" |-------İçecekler--------|"<<endl;
+					cout<<" |      1-Ayran           |"<<endl;
+					cout<<" |      2-Kola            |"<<endl;
+					cout<<" |      3-Fanta           |"<<endl;
+					cout<<" |      4-Salgam          |"<<endl;
+					cout<<" |      5-Sprite          |"<<endl;
+					cout<<" |------------------------|"<<endl;   
+                    cout<<"İçecek seçiniz:\t"<<endl;
+                    cin>>sprs.siparis.icecek;
+                     cout<<"|--------Tatlılar--------|"<<endl;
+					cout<<" |     1-Supangle         |"<<endl;
+					cout<<" |     2-Trilece          |"<<endl;
+					cout<<" |     3-Puding           |"<<endl;
+					cout<<" |     4-Muhallebi        |"<<endl;
+					cout<<" |------------------------|"<<endl;
+					cout<<"Tatlı seçiniz:\t"<<endl;
+					cin>>sprs.siparis.tatli; 
+		  
+                        dosya.write((char*)&sprs, sizeof(sprs));
+                        dosya.close();
+            	  }
+            	 else
+                 	{
+                         Musteri y_sprs;
+                         ofstream y_dosya;
+                         y_dosya.open("Yedek.dat",ios::app|ios::binary);
+                         
+                    	 strcpy(y_sprs.ad,sprs.ad);
+            			 strcpy(y_sprs.soyad,sprs.soyad);
+            			 strcpy(y_sprs.telefon_no,sprs.telefon_no);
+             			  y_sprs.cinsiyet=sprs.cinsiyet;
+                         
+             			 y_dosya.write((char*)&y_sprs, sizeof(y_sprs));
+                         y_dosya.close();
+                   }
+     }
+ }
+    oku.close();
+    if(var)
+    {
+               remove("kafe.dat");
+               rename("Yedek.dat","kafe.dat");
+               cout<<"\nKayit Duzeltildi."<<endl;
+    }
+    else
+    {
+               remove("Yedek.dat");
+               cout<<"\nKayit Bulunamadi"<<endl;                  
+    }
+
+}
